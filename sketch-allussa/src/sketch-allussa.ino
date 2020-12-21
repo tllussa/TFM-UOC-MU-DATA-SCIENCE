@@ -117,15 +117,17 @@ void createEventPayload(float pm1, float pm25, float pm10, float pm1c, float pm2
 }
 
 void printResponse(http_response_t &response) {  
-  Serial.println("HTTP Response: ");  
-  Serial.println(response.status);  
-  Serial.println(response.body);  
+  Particle.publish("HTTP Response: "); 
+  String status = " "+response.status;
+  Particle.publish("status",status);  
+  Particle.publish("response body",response.body);  
 } 
 
 void postRequestNeuralNetwork(String telemetry, String model) {  
   request.path = "/post/NeuralNetworkApp.html";  
-  request.body = "{\"telemetry\":\""+telemetry+"\", \"model\":\""+model+"\" }";  
-    
+  request.body = "{\"telemetry\":"+telemetry+", \"model\":\""+model+"\" }";  
+  Particle.publish("model",model);  
+  Particle.publish("body",request.body);    
   http.post(request, response, headers);  
   printResponse(response);  
 } 
@@ -133,8 +135,9 @@ void postRequestNeuralNetwork(String telemetry, String model) {
 void postRequestIsolationForest(String telemetry) {  
    
   request.path = "/post/IsolationForestApp.html";  
-  request.body = "{\"telemetry\":\""+telemetry+"\"}";  
-    
+  request.body = "{\"telemetry\":"+telemetry+"}";  
+  Particle.publish("model","isolationForest");  
+  Particle.publish("body",request.body);    
   http.post(request, response, headers);  
   printResponse(response);  
 }  
@@ -188,20 +191,22 @@ void loop()
     
     String json = "{\"Time\":\""+time+"\",\"PM25\":"+val+"},";
     telemetry = telemetry+json;
-    
+    Particle.publish("telemetry concat",telemetry);    
     
     samplesRead++;
     //si tenim 6 dades apunt
     if(samplesRead == numSamples)
     {
+        int len = telemetry.length()-1;
+        telemetry = telemetry.substring(0,len);
         telemetry = telemetry+"]";
         postRequestNeuralNetwork(telemetry, "LSTM");
         postRequestNeuralNetwork(telemetry, "GRU");
         postRequestNeuralNetwork(telemetry, "DNN");
         postRequestIsolationForest(telemetry);
         telemetry = "[";
+        samplesRead = 0;
     }
     delay(600000);
   }
 }
- 

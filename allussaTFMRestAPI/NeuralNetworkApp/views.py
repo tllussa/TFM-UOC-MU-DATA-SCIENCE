@@ -88,6 +88,7 @@ def neuralnetwork(request):
 
     df['Anomaly'] = anomalies
     df['Time'] = np.array(listTimes).tolist()
+    df['Model']= np.array([neuralModel, neuralModel, neuralModel,neuralModel,neuralModel,neuralModel])
     result = df.to_json(orient="records")
     parsed = json.loads(result)
     out = json.dumps(parsed)  

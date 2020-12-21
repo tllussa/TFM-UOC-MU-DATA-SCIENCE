@@ -59,6 +59,7 @@ def isolationforest(request):
     df['Anomaly'] = df['Anomaly'].replace('-1',True)
     df['Anomaly'] = df['Anomaly'].replace('1',False)
     df['Time'] = np.array(listTimes).tolist()
+    df['Model']= np.array(['Isolation Forest', 'Isolation Forest', 'Isolation Forest','Isolation Forest', 'Isolation Forest', 'Isolation Forest'])
     df = df.drop(columns=['PM25c'])
     result = df.to_json(orient="records")
     parsed = json.loads(result)
