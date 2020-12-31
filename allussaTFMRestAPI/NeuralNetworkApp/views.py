@@ -7,6 +7,10 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from keras import backend
+import gspread
+from gspread_dataframe import set_with_dataframe
+
+from oauth2client.service_account import ServiceAccountCredentials
 
 TIME_STEPS = 6
 
@@ -92,5 +96,13 @@ def neuralnetwork(request):
     result = df.to_json(orient="records")
     parsed = json.loads(result)
     out = json.dumps(parsed)  
+
+    # ACCES GOOGLE SHEET
+    gc = gspread.service_account(filename='allussa-tfm-datascience-629a42e3a04c.json')
+    sh = gc.open_by_key('1rABPVxIs0LBPbrX3txJQTIxDxaB1puRtSovBiZjnLLw')
+    worksheet = sh.get_worksheet(0) #-> 0 - first sheet, 1 - second sheet etc. 
+
+    # APPEND DATA TO SHEET
+    set_with_dataframe(worksheet, df) #-> THIS EXPORTS YOUR DATAFRAME TO THE GOOGLE SHEET
 
     return HttpResponse(out)
