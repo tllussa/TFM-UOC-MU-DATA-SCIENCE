@@ -19,6 +19,9 @@
 **Rest APIS**
 * sketch-allussaTFMRestAPI
 
+**Prediccions Temps Real**
+*prediccions - Hoja 1.csv
+
 # Autor
 Antoni Llussà Sala
 
